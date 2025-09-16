@@ -6,5 +6,6 @@
 </head>
 <body>
     <h1>WELKOM BIJ MIJN LARAVEL project</h1>
+    <p><a href="{{ route('shop.index') }}">Ga naar de shop</a></p>
 </body>
 </html>
