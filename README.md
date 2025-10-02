@@ -19,15 +19,17 @@ Een eenvoudige Laravel webshop applicatie voor elektronische producten met produ
    cd laravel_project
    ```
 
-2. **Installeer dependencies:**
+2. **Environment setup:**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+3. **Installeer dependencies:**
    ```bash
    composer install
    npm install
    ```
-
-3. **Environment setup:**
-   - Kopieer `.env.example` naar `.env`
-   - Configureer je database settings in `.env` (standaard gebruikt het SQLite)
 
 4. **Database setup:**
    ```bash
