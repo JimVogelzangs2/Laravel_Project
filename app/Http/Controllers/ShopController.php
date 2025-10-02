@@ -19,16 +19,19 @@ class ShopController extends Controller
         ];
     }
 
+    // getCart() haalt de winkelwagen op uit de sessie (Session::get() leest sessie-data)
     private function getCart(): array
     {
         return Session::get('cart', []);
     }
 
+    // saveCart() slaat de winkelwagen op in de sessie (Session::put() schrijft sessie-data)
     private function saveCart(array $cart): void
     {
         Session::put('cart', $cart);
     }
 
+    // index() toont de shop-indexpagina (view() rendert Blade-template met compact() voor data-doorgave)
     public function index()
     {
         $products = $this->getProducts();
@@ -36,6 +39,7 @@ class ShopController extends Controller
         return view('shop.index', compact('products', 'cart'));
     }
 
+    // show() toont een individueel product (abort() stopt uitvoering bij 404-fout)
     public function show(int $id)
     {
         $products = $this->getProducts();
@@ -47,6 +51,7 @@ class ShopController extends Controller
         return view('shop.show', compact('product', 'cart'));
     }
 
+    // addToCart() voegt product toe aan winkelwagen (Request $request voor input, redirect()->route() voor doorsturen)
     public function addToCart(Request $request, int $id)
     {
         $products = $this->getProducts();
@@ -60,6 +65,7 @@ class ShopController extends Controller
         return redirect()->route('shop.cart')->with('status', 'Product toegevoegd aan winkelwagen.');
     }
 
+    // removeFromCart() verwijdert product uit winkelwagen (redirect()->route() voor doorsturen)
     public function removeFromCart(int $id)
     {
         $cart = $this->getCart();
@@ -70,6 +76,7 @@ class ShopController extends Controller
         return redirect()->route('shop.cart')->with('status', 'Product verwijderd.');
     }
 
+    // cart() toont de winkelwagenpagina
     public function cart()
     {
         $products = $this->getProducts();
@@ -77,6 +84,7 @@ class ShopController extends Controller
         return view('shop.cart', compact('products', 'cart'));
     }
 
+    // checkout() verwerkt afrekening (Session::forget() wist sessie-data)
     public function checkout()
     {
         // In een echte shop zou hier betaling/logica komen.
