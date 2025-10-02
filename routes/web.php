@@ -23,5 +23,9 @@ Route::post('/cart/remove/{id}', [ShopController::class, 'removeFromCart'])->nam
 Route::get('/products/create', [ShopController::class, 'create'])->name('shop.create');
 // Route::post() voor het opslaan van een nieuw product
 Route::post('/products', [ShopController::class, 'store'])->name('shop.store');
+// Edit/Update/Delete routes
+Route::get('/products/{id}/edit', [ShopController::class, 'edit'])->name('shop.edit');
+Route::put('/products/{id}', [ShopController::class, 'update'])->name('shop.update');
+Route::delete('/products/{id}', [ShopController::class, 'destroy'])->name('shop.destroy');
 // Route::post() voor het verzenden van checkout-data
 Route::post('/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');

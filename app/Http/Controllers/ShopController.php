@@ -80,11 +80,54 @@ class ShopController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'description' => 'required|string',
+            'image' => 'nullable|image|max:4096',
         ]);
 
-        Product::create($request->only(['name', 'price', 'description']));
+        $data = $request->only(['name', 'price', 'description']);
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $data['image_path'] = $path;
+        }
+        Product::create($data);
 
         return redirect()->route('shop.index')->with('status', 'Product succesvol aangemaakt.');
+    }
+
+    // edit() toont het formulier om een product te bewerken
+    public function edit(int $id)
+    {
+        $product = Product::findOrFail($id);
+        return view('shop.edit', compact('product'));
+    }
+
+    // update() werkt een product bij
+    public function update(Request $request, int $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'image' => 'nullable|image|max:4096',
+        ]);
+
+        $data = $request->only(['name', 'price', 'description']);
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $data['image_path'] = $path;
+        }
+        $product->update($data);
+
+        return redirect()->route('shop.index')->with('status', 'Product succesvol bijgewerkt.');
+    }
+
+    // destroy() verwijdert een product
+    public function destroy(int $id)
+    {
+        $product = Product::findOrFail($id);
+        $product->delete();
+        return redirect()->route('shop.index')->with('status', 'Product verwijderd.');
     }
 
     // checkout() verwerkt afrekening (Session::forget() wist sessie-data)
