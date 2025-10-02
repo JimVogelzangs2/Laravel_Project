@@ -4,9 +4,9 @@
         $lines = [];
         $total = 0;
         foreach ($cart as $productId => $qty) {
-            if (!isset($products[$productId])) continue;
-            $p = $products[$productId];
-            $lineTotal = $p['price'] * $qty;
+            $p = $products->find($productId);
+            if (!$p) continue;
+            $lineTotal = $p->price * $qty;
             $total += $lineTotal;
             $lines[] = ['p' => $p, 'qty' => $qty, 'line' => $lineTotal];
         }
@@ -29,12 +29,12 @@
             <tbody>
             @foreach ($lines as $row)
                 <tr>
-                    <td>{{ $row['p']['name'] }}</td>
-                    <td class="right">€ {{ number_format($row['p']['price'], 2, ',', '.') }}</td>
+                    <td>{{ $row['p']->name }}</td>
+                    <td class="right">€ {{ number_format($row['p']->price, 2, ',', '.') }}</td>
                     <td class="right">{{ $row['qty'] }}</td>
                     <td class="right">€ {{ number_format($row['line'], 2, ',', '.') }}</td>
                     <td>
-                        <form method="post" action="{{ route('shop.cart.remove', $row['p']['id']) }}">
+                        <form method="post" action="{{ route('shop.cart.remove', $row['p']->id) }}">
                             @csrf
                             <button class="btn secondary" type="submit">Verwijderen</button>
                         </form>

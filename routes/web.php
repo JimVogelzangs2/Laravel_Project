@@ -19,5 +19,9 @@ Route::get('/cart', [ShopController::class, 'cart'])->name('shop.cart');
 Route::post('/cart/add/{id}', [ShopController::class, 'addToCart'])->name('shop.cart.add');
 // Route::post() voor het verzenden van data om een product te verwijderen uit de winkelwagen
 Route::post('/cart/remove/{id}', [ShopController::class, 'removeFromCart'])->name('shop.cart.remove');
+// Route::get() voor het tonen van het formulier om een nieuw product aan te maken
+Route::get('/products/create', [ShopController::class, 'create'])->name('shop.create');
+// Route::post() voor het opslaan van een nieuw product
+Route::post('/products', [ShopController::class, 'store'])->name('shop.store');
 // Route::post() voor het verzenden van checkout-data
 Route::post('/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');

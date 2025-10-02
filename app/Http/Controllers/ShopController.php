@@ -4,20 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use App\Models\Product;
 
 class ShopController extends Controller
 {
-    /**
-     * Eenvoudige in-memory productlijst.
-     */
-    private function getProducts(): array
-    {
-        return [
-            1 => ['id' => 1, 'name' => 'USB-C Kabel', 'price' => 9.99, 'description' => 'Stevige 1m USB-C kabel.'],
-            2 => ['id' => 2, 'name' => 'Bluetooth Speaker', 'price' => 29.95, 'description' => 'Compacte speaker met helder geluid.'],
-            3 => ['id' => 3, 'name' => 'Draadloze Muis', 'price' => 19.5, 'description' => 'Comfortabele muis met 2,4GHz dongle.'],
-        ];
-    }
 
     // getCart() haalt de winkelwagen op uit de sessie (Session::get() leest sessie-data)
     private function getCart(): array
@@ -34,7 +24,7 @@ class ShopController extends Controller
     // index() toont de shop-indexpagina (view() rendert Blade-template met compact() voor data-doorgave)
     public function index()
     {
-        $products = $this->getProducts();
+        $products = Product::all();
         $cart = $this->getCart();
         return view('shop.index', compact('products', 'cart'));
     }
@@ -42,11 +32,7 @@ class ShopController extends Controller
     // show() toont een individueel product (abort() stopt uitvoering bij 404-fout)
     public function show(int $id)
     {
-        $products = $this->getProducts();
-        if (!isset($products[$id])) {
-            abort(404);
-        }
-        $product = $products[$id];
+        $product = Product::findOrFail($id);
         $cart = $this->getCart();
         return view('shop.show', compact('product', 'cart'));
     }
@@ -54,10 +40,7 @@ class ShopController extends Controller
     // addToCart() voegt product toe aan winkelwagen (Request $request voor input, redirect()->route() voor doorsturen)
     public function addToCart(Request $request, int $id)
     {
-        $products = $this->getProducts();
-        if (!isset($products[$id])) {
-            abort(404);
-        }
+        $product = Product::findOrFail($id);
         $quantity = max(1, (int) $request->input('quantity', 1));
         $cart = $this->getCart();
         $cart[$id] = ($cart[$id] ?? 0) + $quantity;
@@ -79,9 +62,29 @@ class ShopController extends Controller
     // cart() toont de winkelwagenpagina
     public function cart()
     {
-        $products = $this->getProducts();
+        $products = Product::all();
         $cart = $this->getCart();
         return view('shop.cart', compact('products', 'cart'));
+    }
+
+    // create() toont het formulier voor het aanmaken van een nieuw product
+    public function create()
+    {
+        return view('shop.create');
+    }
+
+    // store() slaat een nieuw product op (Request $request voor input, redirect() voor doorsturen)
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'description' => 'required|string',
+        ]);
+
+        Product::create($request->only(['name', 'price', 'description']));
+
+        return redirect()->route('shop.index')->with('status', 'Product succesvol aangemaakt.');
     }
 
     // checkout() verwerkt afrekening (Session::forget() wist sessie-data)
