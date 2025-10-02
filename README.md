@@ -1,61 +1,104 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Basic Electronic Webshop
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Een eenvoudige Laravel webshop applicatie voor elektronische producten met productbeheer functionaliteit.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Product catalogus bekijken
+- Winkelwagen functionaliteit
+- Producten toevoegen aan winkelwagen
+- Nieuwe producten aanmaken via webinterface
+- SQLite database voor data opslag
+- Moderne, responsive UI
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installatie
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. **Clone de repository:**
+   ```bash
+   git clone <repository-url>
+   cd laravel_project
+   ```
 
-## Learning Laravel
+2. **Installeer dependencies:**
+   ```bash
+   composer install
+   npm install
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3. **Environment setup:**
+   - Kopieer `.env.example` naar `.env`
+   - Configureer je database settings in `.env` (standaard gebruikt het SQLite)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+4. **Database setup:**
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+5. **Build assets:**
+   ```bash
+   npm run build
+   ```
 
-## Laravel Sponsors
+6. **Start de applicatie:**
+   ```bash
+   php artisan serve
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+De applicatie is nu beschikbaar op `http://localhost:8000`
 
-### Premium Partners
+## Gebruik
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- **Homepage:** `http://localhost:8000`
+- **Shop:** `http://localhost:8000/shop`
+- **Nieuw product aanmaken:** Klik op "Nieuw Product Aanmaken" in de shop
 
-## Contributing
+## Database
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+De applicatie gebruikt SQLite als database. Het database bestand wordt automatisch aangemaakt bij het uitvoeren van de migrations. De database bevat:
 
-## Code of Conduct
+- `products` tabel: Product informatie (naam, prijs, beschrijving)
+- `users` tabel: Gebruiker accounts
+- `sessions` tabel: Sessie data voor winkelwagen
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Ontwikkeling
 
-## Security Vulnerabilities
+### Requirements
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- PHP 8.1+
+- Composer
+- Node.js & NPM
+- SQLite
+
+### Belangrijke commando's
+
+```bash
+# Database reset
+php artisan migrate:fresh --seed
+
+# Assets compileren voor development
+npm run dev
+
+# Tests uitvoeren
+php artisan test
+```
+
+## Project Structuur
+
+- `app/Http/Controllers/ShopController.php` - Shop logica
+- `app/Models/Product.php` - Product model
+- `resources/views/shop/` - Shop templates
+- `database/migrations/` - Database migrations
+- `database/seeders/` - Database seeders
+
+## Bijdragen
+
+1. Fork het project
+2. Maak een feature branch
+3. Commit je changes
+4. Push naar de branch
+5. Maak een Pull Request
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Dit project is gelicenseerd onder de MIT License.
