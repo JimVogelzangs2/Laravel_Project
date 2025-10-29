@@ -24,7 +24,15 @@ class ShopController extends Controller
     // index() toont de shop-indexpagina (view() rendert Blade-template met compact() voor data-doorgave)
     public function index()
     {
-        $products = Product::all();
+        $query = Product::query();
+
+        if (request('category')) {
+            $query->whereHas('categories', function($q) {
+                $q->where('categories.id', request('category'));
+            });
+        }
+
+        $products = $query->get();
         $cart = $this->getCart();
         return view('shop.index', compact('products', 'cart'));
     }
@@ -81,6 +89,8 @@ class ShopController extends Controller
             'price' => 'required|numeric|min:0',
             'description' => 'required|string',
             'image' => 'nullable|image|max:4096',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
         ]);
 
         $data = $request->only(['name', 'price', 'description']);
@@ -88,7 +98,11 @@ class ShopController extends Controller
             $path = $request->file('image')->store('products', 'public');
             $data['image_path'] = $path;
         }
-        Product::create($data);
+        $product = Product::create($data);
+
+        if ($request->has('categories')) {
+            $product->categories()->attach($request->categories);
+        }
 
         return redirect()->route('shop.index')->with('status', 'Product succesvol aangemaakt.');
     }
@@ -110,6 +124,8 @@ class ShopController extends Controller
             'price' => 'required|numeric|min:0',
             'description' => 'required|string',
             'image' => 'nullable|image|max:4096',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
         ]);
 
         $data = $request->only(['name', 'price', 'description']);
@@ -118,6 +134,12 @@ class ShopController extends Controller
             $data['image_path'] = $path;
         }
         $product->update($data);
+
+        if ($request->has('categories')) {
+            $product->categories()->sync($request->categories);
+        } else {
+            $product->categories()->detach();
+        }
 
         return redirect()->route('shop.index')->with('status', 'Product succesvol bijgewerkt.');
     }

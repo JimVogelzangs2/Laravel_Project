@@ -47,6 +47,21 @@
             </div>
 
             <div class="form-group">
+                <label for="categories" class="form-label">Categorieën:</label>
+                <select id="categories" name="categories[]" class="form-input" multiple>
+                    @foreach(\App\Models\Category::all() as $category)
+                        <option value="{{ $category->id }}" {{ $product->categories->contains($category->id) ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <small style="color: #6b7280; font-size: 0.875rem;">Houd Ctrl (Windows) of Cmd (Mac) ingedrukt om meerdere categorieën te selecteren.</small>
+                @error('categories')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
                 <label class="form-label">Huidige afbeelding:</label>
                 @if($product->image_path)
                     <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}" style="max-width:200px; height:auto; border-radius:8px; display:block; margin-bottom:8px;" />

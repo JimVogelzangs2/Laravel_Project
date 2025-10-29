@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CategoryController;
 
 // Route::get() definieert een GET-route die data ophaalt zonder wijzigingen (bijv. pagina's bekijken)
 Route::get('/', function () {
@@ -29,3 +30,6 @@ Route::put('/products/{id}', [ShopController::class, 'update'])->name('shop.upda
 Route::delete('/products/{id}', [ShopController::class, 'destroy'])->name('shop.destroy');
 // Route::post() voor het verzenden van checkout-data
 Route::post('/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');
+
+// Category routes
+Route::resource('categories', CategoryController::class);

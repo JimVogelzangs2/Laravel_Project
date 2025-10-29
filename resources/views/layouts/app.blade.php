@@ -3,12 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Shop' }}</title>
     <style>
         body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
         header { background: #111827; color: #fff; padding: 12px 16px; display:flex; align-items:center; justify-content:space-between; }
         header a { color: #fff; text-decoration: none; margin-right: 12px; }
-        main { max-width: 960px; margin: 20px auto; padding: 0 16px; }
+        main { width: 100%; margin: 20px 0; padding: 0; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
         .card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; }
         .price { font-weight: bold; }

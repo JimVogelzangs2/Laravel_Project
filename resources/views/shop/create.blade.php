@@ -52,6 +52,21 @@
                 @enderror
             </div>
 
+            <div class="form-group">
+                <label for="categories" class="form-label">Categorieën:</label>
+                <select id="categories" name="categories[]" class="form-input" multiple>
+                    @foreach(\App\Models\Category::all() as $category)
+                        <option value="{{ $category->id }}" {{ in_array($category->id, old('categories', [])) ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <small style="color: #6b7280; font-size: 0.875rem;">Houd Ctrl (Windows) of Cmd (Mac) ingedrukt om meerdere categorieën te selecteren.</small>
+                @error('categories')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+            </div>
+
             <div class="btn-group">
                 <button type="submit" class="btn primary">Product Aanmaken</button>
                 <a href="{{ route('shop.index') }}" class="btn secondary">Annuleren</a>
