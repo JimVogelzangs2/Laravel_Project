@@ -32,4 +32,4 @@ Route::delete('/products/{id}', [ShopController::class, 'destroy'])->name('shop.
 Route::post('/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');
 
 // Category routes
-Route::resource('categories', CategoryController::class);
+Route::resource('categories', CategoryController::class)->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

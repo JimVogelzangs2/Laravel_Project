@@ -23,10 +23,7 @@
         .category-action-btn { padding: 0.25rem; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; background: rgba(255,255,255,0.2); color: white; }
         .category-action-btn:hover { background: rgba(255,255,255,0.3); }
 
-        .grid-products { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 1rem; }
-        @media (min-width: 640px) { .grid-products { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-        @media (min-width: 1024px) { .grid-products { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-        @media (min-width: 1400px) { .grid-products { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+        .grid-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
         .card { background: white; border-radius: 14px; overflow: hidden; border: 1px solid #e5e7eb; display: flex; flex-direction: column; height: 100%; box-shadow: 0 4px 14px rgba(17, 24, 39, 0.06); transition: transform .15s ease, box-shadow .15s ease; }
         .card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(17, 24, 39, 0.10); }
         .card-img { width: 100%; height: 190px; object-fit: cover; display: block; background: #f3f4f6; }
@@ -173,16 +170,35 @@
                 fetch(`/categories/${id}`, {
                     method: 'DELETE',
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                 })
                 .then(response => {
-                    if (response.ok) {
-                        location.reload();
-                    } else {
-                        alert('Er is een fout opgetreden bij het verwijderen van de categorie.');
-                    }
+                    console.log('Response status:', response.status);
+                    console.log('Response ok:', response.ok);
+                    return response.text().then(text => {
+                        console.log('Response text:', text);
+                        try {
+                            const data = JSON.parse(text);
+                            if (response.ok) {
+                                location.reload();
+                            } else {
+                                if (data.error) {
+                                    alert(data.error);
+                                } else {
+                                    alert('Er is een fout opgetreden bij het verwijderen van de categorie.');
+                                }
+                            }
+                        } catch (e) {
+                            console.error('JSON parse error:', e);
+                            alert('Er is een fout opgetreden bij het verwijderen van de categorie.');
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    alert('Er is een fout opgetreden bij het verwijderen van de categorie.');
                 });
             }
         }

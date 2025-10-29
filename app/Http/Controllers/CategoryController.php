@@ -36,6 +36,10 @@ class CategoryController extends Controller
 
         Category::create($request->only(['name', 'description']));
 
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Categorie succesvol aangemaakt.'], 201);
+        }
+
         return redirect()->route('categories.index')->with('status', 'Categorie succesvol aangemaakt.');
     }
 
@@ -67,6 +71,10 @@ class CategoryController extends Controller
 
         $category->update($request->only(['name', 'description']));
 
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Categorie succesvol bijgewerkt.'], 200);
+        }
+
         return redirect()->route('categories.index')->with('status', 'Categorie succesvol bijgewerkt.');
     }
 
@@ -75,7 +83,14 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        // Detach all products from this category before deleting
+        $category->products()->detach();
+
         $category->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Categorie verwijderd.'], 200);
+        }
 
         return redirect()->route('categories.index')->with('status', 'Categorie verwijderd.');
     }
