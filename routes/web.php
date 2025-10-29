@@ -33,3 +33,6 @@ Route::post('/checkout', [ShopController::class, 'checkout'])->name('shop.checko
 
 // Category routes
 Route::resource('categories', CategoryController::class)->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+
+// Product Image routes
+Route::delete('product-images/{productImage}', [App\Http\Controllers\ProductImageController::class, 'destroy'])->name('product-images.destroy');

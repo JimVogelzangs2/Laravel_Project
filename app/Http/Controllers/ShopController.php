@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Models\Product;
 
 class ShopController extends Controller
@@ -88,17 +90,25 @@ class ShopController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'description' => 'required|string',
-            'image' => 'nullable|image|max:4096',
+            'images' => 'nullable|array',
+            'images.*' => 'image|max:4096',
             'categories' => 'nullable|array',
             'categories.*' => 'exists:categories,id',
         ]);
 
         $data = $request->only(['name', 'price', 'description']);
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $data['image_path'] = $path;
-        }
         $product = Product::create($data);
+
+        // Handle multiple image uploads
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('products', 'public');
+                $product->images()->create([
+                    'image_path' => $path,
+                    'sort_order' => $index
+                ]);
+            }
+        }
 
         if ($request->has('categories')) {
             $product->categories()->attach($request->categories);
@@ -117,26 +127,50 @@ class ShopController extends Controller
     // update() werkt een product bij
     public function update(Request $request, int $id)
     {
+        // Log::info('Update method called', ['request' => $request->all()]);
         $product = Product::findOrFail($id);
 
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'description' => 'required|string',
-            'image' => 'nullable|image|max:4096',
-            'categories' => 'nullable|array',
-            'categories.*' => 'exists:categories,id',
+            'images' => 'nullable|array',
+            'images.*' => 'image|max:4096',
+            'categories' => 'nullable', // Accept both array and string for flexibility
         ]);
 
         $data = $request->only(['name', 'price', 'description']);
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $data['image_path'] = $path;
-        }
         $product->update($data);
 
+        // Handle multiple image uploads
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('products', 'public');
+                $product->images()->create([
+                    'image_path' => $path,
+                    'sort_order' => $product->images()->max('sort_order') + $index + 1
+                ]);
+            }
+        }
+
+        // Handle categories - check if it's a comma-separated string (from category removal)
         if ($request->has('categories')) {
-            $product->categories()->sync($request->categories);
+            if (is_string($request->categories)) {
+                if (str_contains($request->categories, ',')) {
+                    // This is from category removal - convert comma-separated string to array
+                    $categoryIds = array_filter(explode(',', $request->categories));
+                    $product->categories()->sync($categoryIds);
+                } elseif (!empty($request->categories)) {
+                    // Single category ID as string
+                    $product->categories()->sync([$request->categories]);
+                } else {
+                    // Empty string means no categories
+                    $product->categories()->detach();
+                }
+            } elseif (is_array($request->categories)) {
+                // Normal category update from form
+                $product->categories()->sync($request->categories);
+            }
         } else {
             $product->categories()->detach();
         }
@@ -148,6 +182,14 @@ class ShopController extends Controller
     public function destroy(int $id)
     {
         $product = Product::findOrFail($id);
+
+        // Delete associated images from storage
+        foreach ($product->images as $image) {
+            if (Storage::disk('public')->exists($image->image_path)) {
+                Storage::disk('public')->delete($image->image_path);
+            }
+        }
+
         $product->delete();
         return redirect()->route('shop.index')->with('status', 'Product verwijderd.');
     }

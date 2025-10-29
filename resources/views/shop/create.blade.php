@@ -21,9 +21,10 @@
         <form action="{{ route('shop.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
-                <label for="image" class="form-label">Afbeelding (optioneel):</label>
-                <input type="file" id="image" name="image" class="form-input" accept="image/*">
-                @error('image')
+                <label for="images" class="form-label">Afbeeldingen (optioneel):</label>
+                <input type="file" id="images" name="images[]" class="form-input" accept="image/*" multiple>
+                <small style="color: #6b7280; font-size: 0.875rem;">Selecteer meerdere afbeeldingen door Ctrl (Windows) of Cmd (Mac) ingedrukt te houden.</small>
+                @error('images')
                     <div class="error">{{ $message }}</div>
                 @enderror
             </div>

@@ -1,8 +1,12 @@
 <x-layouts.app :title="$product->name">
     <a href="{{ route('shop.index') }}" class="btn secondary">Terug</a>
     <h1>{{ $product->name }}</h1>
-    @if($product->image_path)
-        <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}" style="max-width:400px; height:auto; border-radius:8px; margin-bottom:12px;" />
+    @if($product->images->count() > 0)
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            @foreach($product->images as $image)
+                <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}" style="max-width:300px; height:300px; object-fit: cover; border-radius:8px;" />
+            @endforeach
+        </div>
     @endif
     <p>{{ $product->description }}</p>
     <p class="price">€ {{ number_format($product->price, 2, ',', '.') }}</p>

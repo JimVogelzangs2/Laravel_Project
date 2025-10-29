@@ -66,8 +66,8 @@
             <div class="grid-products">
             @foreach ($products as $product)
                 <div class="card">
-                    @if($product->image_path)
-                        <img class="card-img" src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }}" />
+                    @if($product->images->count() > 0)
+                        <img class="card-img" src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="{{ $product->name }}" />
                     @else
                         <img class="card-img" src="https://via.placeholder.com/640x360.png?text=Geen+afbeelding" alt="Geen afbeelding" />
                     @endif
