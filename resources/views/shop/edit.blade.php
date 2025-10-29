@@ -82,11 +82,7 @@
                         @foreach($product->images as $image)
                             <div style="position: relative; display: inline-block;">
                                 <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}" style="max-width:150px; height:150px; object-fit: cover; border-radius:8px;" />
-                                <form action="{{ route('product-images.destroy', $image->id) }}" method="POST" style="position: absolute; top: 5px; right: 5px;" onsubmit="return confirm('Weet je zeker dat je deze afbeelding wilt verwijderen?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" style="background: #ef4444; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">×</button>
-                                </form>
+                                <button type="button" onclick="removeImage({{ $image->id }})" style="position: absolute; top: 5px; right: 5px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">×</button>
                             </div>
                         @endforeach
                     </div>
@@ -163,6 +159,32 @@
                 .catch(error => {
                     console.error('Error:', error);
                     alert('Er is een fout opgetreden bij het bijwerken van het product.');
+                });
+            }
+        }
+
+        function removeImage(imageId) {
+            if (confirm('Weet je zeker dat je deze afbeelding wilt verwijderen?')) {
+                // Send AJAX request to delete the image
+                fetch(`/product-images/${imageId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Reload the page to show updated images
+                        window.location.reload();
+                    } else {
+                        alert('Er is een fout opgetreden bij het verwijderen van de afbeelding.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Er is een fout opgetreden bij het verwijderen van de afbeelding.');
                 });
             }
         }
