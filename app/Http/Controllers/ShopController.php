@@ -100,7 +100,7 @@ class ShopController extends Controller
         $product = Product::create($data);
 
         // Handle multiple image uploads
-        if ($request->hasFile('images')) {
+        if ($request->file('images')) {
             foreach ($request->file('images') as $index => $image) {
                 $path = $image->store('products', 'public');
                 $product->images()->create([
@@ -127,7 +127,7 @@ class ShopController extends Controller
     // update() werkt een product bij
     public function update(Request $request, int $id)
     {
-        // Log::info('Update method called', ['request' => $request->all()]);
+        Log::info('Update method called', ['request' => $request->all()]);
         $product = Product::findOrFail($id);
 
         $request->validate([
@@ -143,18 +143,24 @@ class ShopController extends Controller
         $product->update($data);
 
         // Handle multiple image uploads
-        if ($request->hasFile('images')) {
+        if ($request->file('images')) {
+            Log::info('Processing images', ['count' => count($request->file('images'))]);
             foreach ($request->file('images') as $index => $image) {
                 $path = $image->store('products', 'public');
+                Log::info('Stored image', ['path' => $path]);
+                $maxSort = $product->images()->max('sort_order') ?? 0;
                 $product->images()->create([
                     'image_path' => $path,
-                    'sort_order' => $product->images()->max('sort_order') + $index + 1
+                    'sort_order' => $maxSort + $index + 1
                 ]);
             }
+        } else {
+            Log::info('No images in request');
         }
 
         // Handle categories - check if it's a comma-separated string (from category removal)
         if ($request->has('categories')) {
+            Log::info('Processing categories', ['categories' => $request->categories]);
             if (is_string($request->categories)) {
                 if (str_contains($request->categories, ',')) {
                     // This is from category removal - convert comma-separated string to array
@@ -172,6 +178,7 @@ class ShopController extends Controller
                 $product->categories()->sync($request->categories);
             }
         } else {
+            Log::info('No categories in request');
             $product->categories()->detach();
         }
 

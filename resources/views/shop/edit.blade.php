@@ -67,12 +67,7 @@
                             @foreach($product->categories as $category)
                                 <span style="background: #e5e7eb; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.25rem;">
                                     {{ $category->name }}
-                                    <form action="{{ route('shop.update', $product->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Weet je zeker dat je deze categorie wilt verwijderen van het product?');">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="hidden" name="categories" value="{{ $product->categories->where('id', '!=', $category->id)->pluck('id')->filter()->implode(',') }}">
-                                        <button type="submit" style="background: none; border: none; color: #6b7280; cursor: pointer; padding: 0; font-size: 14px; line-height: 1;">×</button>
-                                    </form>
+                                    <button type="button" onclick="removeCategory({{ $product->id }}, {{ $category->id }}, '{{ $category->name }}')" style="background: none; border: none; color: #6b7280; cursor: pointer; padding: 0; font-size: 14px; line-height: 1;">×</button>
                                 </span>
                             @endforeach
                         </div>
@@ -101,9 +96,9 @@
             </div>
 
             <div class="form-group">
-                <label for="images" class="form-label">Nieuwe afbeeldingen toevoegen (optioneel):</label>
+                <label for="images" class="form-label">Extra afbeeldingen toevoegen (optioneel):</label>
                 <input type="file" id="images" name="images[]" class="form-input" accept="image/*" multiple>
-                <small style="color: #6b7280; font-size: 0.875rem;">Selecteer meerdere afbeeldingen door Ctrl (Windows) of Cmd (Mac) ingedrukt te houden.</small>
+                <small style="color: #6b7280; font-size: 0.875rem;">Selecteer meerdere afbeeldingen om toe te voegen aan de bestaande afbeeldingen. Houd Ctrl (Windows) of Cmd (Mac) ingedrukt voor meerdere selectie.</small>
                 @error('images')
                     <div class="error">{{ $message }}</div>
                 @enderror
@@ -115,6 +110,63 @@
             </div>
         </form>
     </div>
+
+    <script>
+        function removeCategory(productId, categoryId, categoryName) {
+            if (confirm(`Weet je zeker dat je de categorie "${categoryName}" wilt verwijderen van dit product?`)) {
+                // Get current selected categories from the select element
+                const selectElement = document.getElementById('categories');
+                const currentSelected = Array.from(selectElement.selectedOptions).map(option => option.value);
+
+                // Remove the category to be deleted
+                const newSelected = currentSelected.filter(id => id != categoryId);
+
+                // Update the select element
+                Array.from(selectElement.options).forEach(option => {
+                    option.selected = newSelected.includes(option.value);
+                });
+
+                // Create FormData to send via AJAX
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('input[name="_token"]').value);
+                formData.append('_method', 'PUT');
+                formData.append('name', document.getElementById('name').value);
+                formData.append('price', document.getElementById('price').value);
+                formData.append('description', document.getElementById('description').value);
+
+                // Add selected categories
+                newSelected.forEach(id => {
+                    formData.append('categories[]', id);
+                });
+
+                // Add any selected files
+                const fileInput = document.getElementById('images');
+                if (fileInput.files.length > 0) {
+                    Array.from(fileInput.files).forEach(file => {
+                        formData.append('images[]', file);
+                    });
+                }
+
+                // Send AJAX request
+                fetch(`/shop/${productId}`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Reload the page to show updated categories
+                        window.location.reload();
+                    } else {
+                        alert('Er is een fout opgetreden bij het bijwerken van het product.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Er is een fout opgetreden bij het bijwerken van het product.');
+                });
+            }
+        }
+    </script>
 </x-layouts.app>
 
 
