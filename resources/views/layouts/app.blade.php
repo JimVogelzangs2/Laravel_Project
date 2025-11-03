@@ -7,7 +7,7 @@
     <title>{{ $title ?? 'Shop' }}</title>
     <style>
         body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
-        header { background: #111827; color: #fff; padding: 12px 16px; display:flex; align-items:center; justify-content:space-between; }
+        header { background: #111827; color: #fff; padding: 12px 16px; display:flex; align-items:center; justify-content:space-between; position: relative; z-index: 10; }
         header a { color: #fff; text-decoration: none; margin-right: 12px; }
         main { width: 100%; margin: 20px 0; padding: 0; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
@@ -26,16 +26,25 @@
 <header>
     <div>
         <a href="/">Home</a>
-        <a href="{{ route('shop.index') }}">Shop</a>
-        <a href="{{ route('shop.cart') }}">Winkelwagen ({{ collect(session('cart', []))->sum() }})</a>
+        @if(Auth::check())
+            <a href="{{ route('shop.index') }}">Shop</a>
+            <a href="{{ route('shop.cart') }}">Winkelwagen ({{ collect(session('cart', []))->sum() }})</a>
+            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                @csrf
+                @method('POST')
+                <button type="submit" style="background: none; border: none; color: #fff; cursor: pointer; text-decoration: underline;">Logout</button>
+            </form>
+        @else
+            <a href="{{ route('login') }}">Login</a>
+        @endif
     </div>
     <div>Basic Electronic Webshop</div>
 </header>
-<main>
+<main style="margin-top: 0;">
     @if (session('status'))
         <div class="flash">{{ session('status') }}</div>
     @endif
-    {{ $slot }}
+    @yield('content')
 </main>
 </body>
 </html>

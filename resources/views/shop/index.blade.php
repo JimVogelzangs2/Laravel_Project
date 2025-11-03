@@ -1,4 +1,8 @@
-<x-layouts.app :title="'Shop'">
+@extends('layouts.app')
+
+@section('title', 'Shop')
+
+@section('content')
     <style>
         .shop-container { width: 100%; padding: 0; display: flex; gap: 2rem; align-items: flex-start; }
         .sidebar { width: 280px; flex-shrink: 0; position: sticky; top: 1.5rem; height: fit-content; padding: 1.5rem 0; }
@@ -243,6 +247,6 @@
             }
         }
     </script>
-</x-layouts.app>
+@endsection
 
 
